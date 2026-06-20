@@ -1,0 +1,10 @@
+{
+  "name": "ai-internship-finder",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix packages/web",
+    "build": "npm run build --prefix packages/web",
+    "lint": "npm run lint --prefix packages/web",
+    "install:all": "npm install --prefix packages/shared && npm install --prefix packages/web && npm install --prefix packages/mobile"
+  }
+}

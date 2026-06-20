@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "source": "packages/functions",
+    "ignore": ["__pycache__", "node_modules"],
+    "runtime": "python311"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "InternAI",
+    "slug": "intern-ai",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "internai",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.internai.app"
+    },
+    "android": {
+      "package": "com.internai.app",
+      "googleServicesFile": "./google-services.json"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-google-sign-in"
+    ]
+  }
+}

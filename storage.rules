@@ -1,0 +1,10 @@
+// DEPRECATED: Firebase Storage replaced by Cloudflare R2.
+// See packages/web/src/lib/r2.ts and packages/web/src/app/api/upload-resume/route.ts
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

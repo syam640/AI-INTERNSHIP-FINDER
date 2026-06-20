@@ -1,0 +1,9 @@
+{
+  "name": "functions",
+  "private": true,
+  "description": "Firebase Cloud Functions for AI Internship Finder",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  }
+}
