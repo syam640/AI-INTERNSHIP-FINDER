@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = 'https://xvkuzubmgiokcxqjknwt.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2a3V6dWJtZ2lva2N4cWprbnd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4OTA4NzMsImV4cCI6MjA5NzQ2Njg3M30.0qcXlpcEL_4uldGRiocyyR9nE0RJPz4048tQhiykqFU'
-const supabase = createClient(supabaseUrl, supabaseAnonKey)
+import { API_BASE_URL } from '../lib/api'
 
 export default function ResumeScreen() {
   const [uploading, setUploading] = useState(false)
@@ -21,36 +17,46 @@ export default function ResumeScreen() {
       if (result.canceled || !result.assets?.length) return
 
       setUploading(true)
+
       const file = result.assets[0]
 
-      const response = await fetch(file.uri)
-      const blob = await response.blob()
-      const ext = file.name?.split('.').pop() || 'pdf'
-      const path = `mobile/${Date.now()}.${ext}`
+      // Upload to Cloudinary via web API
+      const formData = new FormData()
+      formData.append('file', {
+        uri: file.uri,
+        name: file.name || 'resume.pdf',
+        type: 'application/pdf',
+      } as any)
+      formData.append('uid', 'mobile-user')
 
-      const { error } = await supabase.storage.from('resumes').upload(path, blob, {
-        contentType: 'application/pdf',
+      const uploadRes = await fetch(`${API_BASE_URL}/api/upload-resume`, {
+        method: 'POST',
+        body: formData,
       })
 
-      if (error) {
-        alert('Upload failed: ' + error.message)
-        return
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json().catch(() => ({}))
+        throw new Error(err.error || 'Upload failed')
       }
 
-      const { data: publicUrl } = supabase.storage.from('resumes').getPublicUrl(path)
-
-      // Send to analysis API
+      // Read the PDF content for analysis
       const text = await fetch(file.uri).then(r => r.text())
-      const analysisRes = await fetch('https://xvkuzubmgiokcxqjknwt.supabase.co/functions/v1/analyze-resume', {
+
+      const analysisRes = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeText: text, skills: [] }),
       })
+
+      if (!analysisRes.ok) {
+        throw new Error('Analysis failed')
+      }
+
       const data = await analysisRes.json()
       setAnalysis(data)
     } catch (err) {
       console.error(err)
-      alert('Upload failed')
+      alert(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setUploading(false)
     }
