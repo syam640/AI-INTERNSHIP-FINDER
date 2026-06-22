@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadResume } from '@/lib/supabase-storage'
+import { uploadResume } from '@/lib/storage'
 
 export async function POST(req: NextRequest) {
   const contentType = req.headers.get('content-type') || ''

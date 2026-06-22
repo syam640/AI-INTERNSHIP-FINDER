@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/store'
 import { updateUserProfile } from '@/lib/firestore'
-import { uploadResume } from '@/lib/storage'
 import { useDropzone } from 'react-dropzone'
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 import { analytics } from '@/lib/analytics'
@@ -49,7 +48,12 @@ export default function ProfilePage() {
       if (!user) return
       setUploadingResume(true)
       try {
-        const url = await uploadResume(user.uid, files[0])
+        const formData = new FormData()
+        formData.append('file', files[0])
+        formData.append('uid', user.uid)
+        const res = await fetch('/api/upload-resume', { method: 'POST', body: formData })
+        if (!res.ok) throw new Error((await res.json()).error || 'Upload failed')
+        const { url } = await res.json()
         await updateUserProfile(user.uid, { resumeURL: url })
         setProfile({ ...profile!, resumeURL: url })
         analytics.track('resume_upload')

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/store'
-import { uploadResume } from '@/lib/storage'
 import { useDropzone } from 'react-dropzone'
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'
 import { analytics } from '@/lib/analytics'
@@ -27,7 +26,11 @@ export default function ResumePage() {
       if (!user) return
       setUploading(true)
       try {
-        await uploadResume(user.uid, files[0])
+        const formData = new FormData()
+        formData.append('file', files[0])
+        formData.append('uid', user.uid)
+        const res = await fetch('/api/upload-resume', { method: 'POST', body: formData })
+        if (!res.ok) throw new Error((await res.json()).error || 'Upload failed')
         toast.success('Resume uploaded!')
         analytics.track('resume_upload')
         analyzeResume(files[0])
