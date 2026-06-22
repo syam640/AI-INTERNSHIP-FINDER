@@ -7,6 +7,15 @@ RUN npm ci --omit=dev
 # Stage 2: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
+
+# Build-time args for NEXT_PUBLIC_* vars (inlined at build time)
+ARG NEXT_PUBLIC_FIREBASE_API_KEY
+ARG NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+ARG NEXT_PUBLIC_FIREBASE_PROJECT_ID
+ARG NEXT_PUBLIC_FIREBASE_APP_ID
+ARG NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+ARG NEXT_PUBLIC_FIREBASE_VAPID_KEY
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY packages/web/ .
 RUN npm run build
