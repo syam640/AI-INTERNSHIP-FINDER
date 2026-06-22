@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { API_BASE_URL } from '../lib/api'
+import { useToast } from '../components/Toast'
 
 export default function ResumeScreen() {
   const [uploading, setUploading] = useState(false)
   const [analysis, setAnalysis] = useState<any>(null)
+  const { showToast } = useToast()
 
   const handleUpload = async () => {
     try {
@@ -56,7 +58,7 @@ export default function ResumeScreen() {
       setAnalysis(data)
     } catch (err) {
       console.error(err)
-      alert(err instanceof Error ? err.message : 'Upload failed')
+      showToast(err instanceof Error ? err.message : 'Upload failed', 'error')
     } finally {
       setUploading(false)
     }
