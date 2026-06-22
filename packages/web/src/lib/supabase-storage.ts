@@ -33,7 +33,8 @@ export async function uploadResume(
   const ext = file.name.split('.').pop() || 'pdf'
   const path = `${uid}/${Date.now()}.${ext}`
 
-  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+  const service = getServiceClient()
+  const { error } = await service.storage.from(BUCKET).upload(path, file, {
     cacheControl: '3600',
     upsert: false,
   })

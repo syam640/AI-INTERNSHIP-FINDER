@@ -25,6 +25,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# .env.local must be provided at runtime (e.g. bind mount or --env-file)
+# The standalone server loads it from CWD on startup.
+# For local dev:  docker run -v $(pwd)/packages/web/.env.local:/app/.env.local ...
+# For production: pass all env vars via -e or --env-file, delete this file
+RUN rm -f .env.local
+
 USER nextjs
 EXPOSE 3000
 
