@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { uploadResume } from '@/lib/supabase-storage'
 
 export async function POST(req: NextRequest) {
+  const contentType = req.headers.get('content-type') || ''
+  if (!contentType.includes('multipart/form-data')) {
+    return NextResponse.json(
+      { error: 'Content-Type must be multipart/form-data' },
+      { status: 400 }
+    )
+  }
+
   try {
     const formData = await req.formData()
     const file = formData.get('file') as File | null
