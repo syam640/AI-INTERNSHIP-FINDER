@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Text, View, StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
 import { onAuthChange } from './src/lib/auth'
-import { ToastProvider } from './src/components/Toast'
+import { SnackbarProvider } from './src/components/Snackbar'
 
 import HomeScreen from './src/screens/HomeScreen'
 import LoginScreen from './src/screens/LoginScreen'
@@ -74,7 +74,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <ToastProvider>
+      <SnackbarProvider>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           {user ? (
@@ -92,7 +92,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
       <StatusBar style="auto" />
-      </ToastProvider>
+      </SnackbarProvider>
     </SafeAreaProvider>
   )
 }

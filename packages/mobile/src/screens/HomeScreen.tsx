@@ -1,16 +1,16 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native'
 import { loginWithGoogle } from '../lib/auth'
-import { useToast } from '../components/Toast'
+import { useSnackbar } from '../hooks/useSnackbar'
 
 export default function HomeScreen({ navigation }: any) {
-  const { showToast } = useToast()
+  const { showSnackbar } = useSnackbar()
 
   const handleGoogle = async () => {
     try {
       await loginWithGoogle()
     } catch (err: any) {
-      showToast(err.message, 'error')
+      showSnackbar(err.message, 'error')
     }
   }
 

@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native'
 import { login, loginWithGoogle } from '../lib/auth'
-import { useToast } from '../components/Toast'
+import { useSnackbar } from '../hooks/useSnackbar'
 
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const { showToast } = useToast()
+  const { showSnackbar } = useSnackbar()
 
   const handleLogin = async () => {
     if (!email || !password) return
@@ -15,7 +15,7 @@ export default function LoginScreen({ navigation }: any) {
     try {
       await login(email, password)
     } catch (err: any) {
-      showToast(err.message, 'error')
+      showSnackbar(err.message, 'error')
     } finally {
       setLoading(false)
     }
@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }: any) {
     try {
       await loginWithGoogle()
     } catch (err: any) {
-      showToast(err.message, 'error')
+      showSnackbar(err.message, 'error')
     }
   }
 

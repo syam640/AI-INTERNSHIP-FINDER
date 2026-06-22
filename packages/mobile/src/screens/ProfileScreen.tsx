@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native'
 import { updateUserProfile } from '@internship/shared/src/firestore-client'
 import { auth } from '../lib/auth'
-import { useToast } from '../components/Toast'
+import { useSnackbar } from '../hooks/useSnackbar'
 
 const SKILLS = [
   'Python', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js',
@@ -13,7 +13,7 @@ export default function ProfileScreen() {
   const [skills, setSkills] = useState<string[]>([])
   const [location, setLocation] = useState('')
   const user = auth.currentUser
-  const { showToast } = useToast()
+  const { showSnackbar } = useSnackbar()
 
   const toggleSkill = (skill: string) => {
     setSkills((prev) =>
@@ -25,9 +25,9 @@ export default function ProfileScreen() {
     if (!user) return
     try {
       await updateUserProfile(user.uid, { skills, location })
-      showToast('Profile saved!', 'success')
+      showSnackbar('Profile saved!', 'success')
     } catch {
-      showToast('Failed to save', 'error')
+      showSnackbar('Failed to save', 'error')
     }
   }
 
