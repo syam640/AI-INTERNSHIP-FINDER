@@ -1,5 +1,5 @@
-# See https://github.com/GoogleCloudPlatform/functions-framework-python
-google-cloud-functions-framework>=3.0
+flask>=3.0
+gunicorn>=21.2
 firebase-admin>=6.0
 requests>=2.31
 beautifulsoup4>=4.12

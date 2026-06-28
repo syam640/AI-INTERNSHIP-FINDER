@@ -30,14 +30,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/next.config.js ./next.config.js
 
-# .env.local must be provided at runtime (e.g. bind mount or --env-file)
-# The standalone server loads it from CWD on startup.
-# For local dev:  docker run -v $(pwd)/packages/web/.env.local:/app/.env.local ...
-# For production: pass all env vars via -e or --env-file, delete this file
 RUN rm -f .env.local
 
 USER nextjs
@@ -46,4 +44,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
-CMD ["node", "server.js"]
+CMD ["npx", "next", "start"]
