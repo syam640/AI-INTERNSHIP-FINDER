@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.env
+.env.local
+.env.production
+__pycache__/
+*.pyc
+dist/
+build/
+.expo/
+*.tsbuildinfo
+.git/
+.gitignore
+README.md
