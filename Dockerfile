@@ -2,7 +2,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY packages/web/package.json packages/web/package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Stage 2: Build
 FROM node:20-alpine AS builder
