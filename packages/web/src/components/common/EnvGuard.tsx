@@ -16,8 +16,6 @@ export default function EnvGuard({ children }: Props) {
       'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
       'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
       'NEXT_PUBLIC_FIREBASE_APP_ID',
-      'NEXT_PUBLIC_SUPABASE_URL',
-      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     ]
 
     for (const key of required) {

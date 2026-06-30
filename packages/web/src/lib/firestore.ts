@@ -13,29 +13,47 @@ import {
 } from 'firebase/firestore'
 import { Internship } from './shared'
 
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`Firestore operation timed out after ${ms}ms`)), ms)
+    ),
+  ])
+}
+
 export async function createUserProfile(uid: string, data: any) {
-  await setDoc(doc(db, 'users', uid), {
-    ...data,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  })
+  await withTimeout(
+    setDoc(doc(db, 'users', uid), {
+      ...data,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }),
+    15000
+  )
 }
 
 export async function getUserProfile(uid: string): Promise<any | null> {
-  const snap = await getDoc(doc(db, 'users', uid))
+  const snap = await withTimeout(getDoc(doc(db, 'users', uid)), 15000)
   return snap.exists() ? snap.data() : null
 }
 
 export async function updateUserProfile(uid: string, data: any) {
-  await updateDoc(doc(db, 'users', uid), {
-    ...data,
-    updatedAt: new Date(),
-  })
+  await withTimeout(
+    updateDoc(doc(db, 'users', uid), {
+      ...data,
+      updatedAt: new Date(),
+    }),
+    15000
+  )
 }
 
 export async function saveInternships(internships: Internship[]) {
   for (const internship of internships) {
-    await setDoc(doc(db, 'internships', internship.id), internship as any, { merge: true })
+    await withTimeout(
+      setDoc(doc(db, 'internships', internship.id), internship as any, { merge: true }),
+      15000
+    )
   }
 }
 
@@ -60,6 +78,6 @@ export async function getInternships(filters?: {
   constraints.push(orderBy('postedAt', 'desc'))
   constraints.push(limit(50))
 
-  const snap = await getDocs(query(q, ...constraints))
+  const snap = await withTimeout(getDocs(query(q, ...constraints)), 20000)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() ?? {} } as Internship))
 }

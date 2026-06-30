@@ -1,3 +1,5 @@
+import { logger } from './logger'
+
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY
 
@@ -13,6 +15,7 @@ function getConfig(): { base: string; key: string; provider: Provider } | null {
   if (OPENAI_API_KEY) {
     return { base: OPENAI_BASE, key: OPENAI_API_KEY, provider: 'openai' }
   }
+  logger.warn('No AI API key configured (NVIDIA or OpenAI)')
   return null
 }
 
@@ -43,14 +46,14 @@ export async function callChatCompletion(
 
     if (!res.ok) {
       const body = await res.text()
-      console.error(`AI API error (${cfg.provider}):`, res.status, body)
+      logger.error(`AI API error (${cfg.provider})`, { status: res.status, body: body.slice(0, 500) })
       return null
     }
 
     const data = await res.json()
     return data.choices?.[0]?.message?.content ?? null
   } catch (err) {
-    console.error(`AI API failure (${cfg.provider}):`, err)
+    logger.error(`AI API failure (${cfg.provider})`, { error: (err as Error).message })
     return null
   }
 }

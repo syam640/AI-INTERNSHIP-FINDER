@@ -1,3 +1,5 @@
+import { createHash } from 'crypto'
+
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
 const API_KEY = process.env.CLOUDINARY_API_KEY!
 const API_SECRET = process.env.CLOUDINARY_API_SECRET!
@@ -30,7 +32,7 @@ export async function uploadResume(
   const publicId = `resumes/${uid}/${timestamp}`
 
   const toSign = `public_id=${publicId}&timestamp=${timestamp}`
-  const signature = await generateSignature(toSign)
+  const signature = generateSignature(toSign)
 
   const formData = new FormData()
   formData.append('file', file)
@@ -41,7 +43,7 @@ export async function uploadResume(
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`,
-    { method: 'POST', body: formData, signal: AbortSignal.timeout(60000) }
+    { method: 'POST', body: formData, signal: AbortSignal.timeout(120000) }
   )
 
   if (!res.ok) {
@@ -57,19 +59,14 @@ export async function uploadResume(
   }
 }
 
-async function generateSignature(params: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(params + API_SECRET)
-  const hash = await crypto.subtle.digest('SHA-1', data)
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+function generateSignature(params: string): string {
+  return createHash('sha1').update(params + API_SECRET).digest('hex')
 }
 
 export async function deleteResume(publicId: string): Promise<void> {
   const timestamp = Math.round(Date.now() / 1000)
   const toSign = `public_id=${publicId}&timestamp=${timestamp}`
-  const signature = await generateSignature(toSign)
+  const signature = generateSignature(toSign)
 
   const formData = new FormData()
   formData.append('public_id', publicId)
@@ -79,7 +76,7 @@ export async function deleteResume(publicId: string): Promise<void> {
 
   const res = await fetch(
     `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/destroy`,
-    { method: 'POST', body: formData }
+    { method: 'POST', body: formData, signal: AbortSignal.timeout(30000) }
   )
 
   if (!res.ok) throw new Error('Delete failed')
