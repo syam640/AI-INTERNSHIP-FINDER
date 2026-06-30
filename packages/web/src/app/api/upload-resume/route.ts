@@ -2,13 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { uploadResume } from '@/lib/storage'
 import { logger } from '@/lib/logger'
 
-export const config = {
-  api: {
-    bodyParser: false,
-    responseLimit: '15mb',
-  },
-}
-
 export async function POST(req: NextRequest) {
   const contentType = req.headers.get('content-type') || ''
   if (!contentType.includes('multipart/form-data')) {
